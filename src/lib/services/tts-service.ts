@@ -23,6 +23,10 @@ class TTSService {
   private currentAudio: HTMLAudioElement | null = null;
   private isUsingFallback = false;
 
+  private get isBrowser(): boolean {
+    return typeof window !== "undefined";
+  }
+
   /**
    * Generate cache key for audio
    */
@@ -34,6 +38,11 @@ class TTSService {
    * Speak text using OpenAI TTS (with fallback to browser)
    */
   async speak(text: string, options: TTSOptions = {}): Promise<void> {
+    // Only run in browser
+    if (!this.isBrowser) {
+      return;
+    }
+
     const {
       voice = "nova",
       speed = 0.9,
@@ -169,6 +178,8 @@ class TTSService {
    * Stop any currently playing audio
    */
   stop(): void {
+    if (!this.isBrowser) return;
+
     if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio.currentTime = 0;
@@ -199,6 +210,8 @@ class TTSService {
    * Preload phrases into cache
    */
   async preload(phrases: string[], options: TTSOptions = {}): Promise<void> {
+    if (!this.isBrowser) return;
+
     const { voice = "nova", speed = 0.9 } = options;
 
     await Promise.all(

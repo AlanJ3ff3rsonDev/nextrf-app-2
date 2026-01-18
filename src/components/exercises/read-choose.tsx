@@ -20,7 +20,6 @@ export function ReadChoose({
   disabled = false,
 }: ReadChooseProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Combine and shuffle options
   const [options] = useState(() => {
@@ -28,15 +27,11 @@ export function ReadChoose({
     return all.sort(() => Math.random() - 0.5);
   });
 
+  // Select and immediately submit answer (like ListenTapImage)
   const handleSelect = (itemId: string) => {
-    if (disabled || hasSubmitted) return;
+    if (disabled || selectedId) return;
     setSelectedId(itemId);
-  };
-
-  const handleSubmit = () => {
-    if (!selectedId || hasSubmitted) return;
-    setHasSubmitted(true);
-    onAnswer(selectedId === correctItem.id, selectedId);
+    onAnswer(itemId === correctItem.id, itemId);
   };
 
   return (
@@ -56,25 +51,25 @@ export function ReadChoose({
         {options.map((item) => {
           const isSelected = selectedId === item.id;
           const isCorrect = item.id === correctItem.id;
-          const showResult = hasSubmitted;
+          // Show result immediately after selection (selectedId !== null means submitted)
+          const showResult = selectedId !== null;
 
           return (
             <button
               key={item.id}
               onClick={() => handleSelect(item.id)}
-              disabled={disabled || hasSubmitted}
+              disabled={disabled || selectedId !== null}
               className={cn(
                 "w-full p-4 rounded-2xl",
                 "border-2 text-left",
                 "transition-all duration-200",
                 "active:scale-[0.98]",
                 // Default state
-                !showResult && !isSelected && "border-border bg-white hover:border-primary-300",
-                // Selected but not checked yet
-                isSelected && !showResult && "border-primary-500 bg-primary-50",
+                !showResult && "border-border bg-white hover:border-primary-300",
                 // Show results
                 showResult && isCorrect && "border-success-500 bg-success-50",
-                showResult && isSelected && !isCorrect && "border-error-500 bg-error-50 animate-shake"
+                showResult && isSelected && !isCorrect && "border-error-500 bg-error-50 animate-shake",
+                showResult && !isSelected && !isCorrect && "border-border bg-white opacity-60"
               )}
             >
               <div className="flex items-center gap-3">
@@ -82,19 +77,18 @@ export function ReadChoose({
                 <div
                   className={cn(
                     "w-6 h-6 rounded-full border-2 flex items-center justify-center",
-                    !showResult && !isSelected && "border-border",
-                    isSelected && !showResult && "border-primary-500",
+                    !showResult && "border-border",
                     showResult && isCorrect && "border-success-500 bg-success-500",
-                    showResult && isSelected && !isCorrect && "border-error-500 bg-error-500"
+                    showResult && isSelected && !isCorrect && "border-error-500 bg-error-500",
+                    showResult && !isSelected && !isCorrect && "border-border"
                   )}
                 >
-                  {isSelected && (
+                  {(isSelected || (showResult && isCorrect)) && (
                     <div
                       className={cn(
                         "w-3 h-3 rounded-full",
-                        !showResult && "bg-primary-500",
                         showResult && isCorrect && "bg-white",
-                        showResult && !isCorrect && "bg-white"
+                        showResult && isSelected && !isCorrect && "bg-white"
                       )}
                     />
                   )}
@@ -107,23 +101,7 @@ export function ReadChoose({
           );
         })}
       </div>
-
-      {/* Check button */}
-      {selectedId && !hasSubmitted && (
-        <button
-          onClick={handleSubmit}
-          className={cn(
-            "mt-auto",
-            "w-full py-4 rounded-2xl",
-            "bg-primary-500 text-white font-semibold",
-            "transition-all duration-200",
-            "hover:bg-primary-600",
-            "active:scale-[0.98]"
-          )}
-        >
-          Check
-        </button>
-      )}
+      {/* Button removed - ExerciseContainer handles the Continue button */}
     </div>
   );
 }

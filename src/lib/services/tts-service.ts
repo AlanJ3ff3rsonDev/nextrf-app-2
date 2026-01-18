@@ -252,5 +252,43 @@ class TTSService {
   }
 }
 
-// Export singleton instance
-export const ttsService = new TTSService();
+// Export singleton instance (lazy initialization for SSR safety)
+let _ttsService: TTSService | null = null;
+
+export const ttsService = {
+  get instance() {
+    if (!_ttsService) {
+      _ttsService = new TTSService();
+    }
+    return _ttsService;
+  },
+  speak: (text: string, options?: any) => {
+    if (typeof window === "undefined") return Promise.resolve();
+    if (!_ttsService) _ttsService = new TTSService();
+    return _ttsService.speak(text, options);
+  },
+  stop: () => {
+    if (typeof window === "undefined") return;
+    if (!_ttsService) return;
+    _ttsService.stop();
+  },
+  get isPlaying() {
+    if (typeof window === "undefined") return false;
+    if (!_ttsService) return false;
+    return _ttsService.isPlaying;
+  },
+  get usingFallback() {
+    if (!_ttsService) return false;
+    return _ttsService.usingFallback;
+  },
+  preload: (phrases: string[], options?: any) => {
+    if (typeof window === "undefined") return Promise.resolve();
+    if (!_ttsService) _ttsService = new TTSService();
+    return _ttsService.preload(phrases, options);
+  },
+  clearCache: () => {
+    if (typeof window === "undefined") return;
+    if (!_ttsService) return;
+    _ttsService.clearCache();
+  },
+};

@@ -12,10 +12,19 @@ export function useTextToSpeech(options: UseAudioOptions = {}) {
   const [isSupported, setIsSupported] = useState(true);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  // Store options in ref to avoid recreating speak on every render
+  const optionsRef = useRef(options);
+
+  // Update ref when options change (without triggering re-renders)
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   useEffect(() => {
     setIsSupported("speechSynthesis" in window);
   }, []);
 
+  // speak now has stable reference - only depends on isSupported
   const speak = useCallback(
     (text: string) => {
       if (!isSupported || !window.speechSynthesis) return;
@@ -25,20 +34,20 @@ export function useTextToSpeech(options: UseAudioOptions = {}) {
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
-      utterance.rate = options.rate ?? 0.9; // Slightly slower for learning
+      utterance.rate = optionsRef.current.rate ?? 0.9;
       utterance.pitch = 1;
 
       utterance.onstart = () => setIsPlaying(true);
       utterance.onend = () => {
         setIsPlaying(false);
-        options.onEnd?.();
+        optionsRef.current.onEnd?.();
       };
       utterance.onerror = () => setIsPlaying(false);
 
       utteranceRef.current = utterance;
       window.speechSynthesis.speak(utterance);
     },
-    [isSupported, options]
+    [isSupported]
   );
 
   const stop = useCallback(() => {
@@ -63,23 +72,31 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
 
+  // Store options in ref to avoid recreating startListening on every render
+  const optionsRef = useRef(options);
+
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     setIsSupported(!!SpeechRecognition);
   }, []);
 
+  // startListening now has stable reference
   const startListening = useCallback(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      options.onError?.("Speech recognition not supported");
+      optionsRef.current.onError?.("Speech recognition not supported");
       return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = options.language ?? "en-US";
+    recognition.lang = optionsRef.current.language ?? "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -89,18 +106,18 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
       setTranscript("");
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const result = event.results[0][0];
       const text = result.transcript;
       const confidence = result.confidence;
 
       setTranscript(text);
-      options.onResult?.(text, confidence);
+      optionsRef.current.onResult?.(text, confidence);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       setIsListening(false);
-      options.onError?.(event.error);
+      optionsRef.current.onError?.(event.error);
     };
 
     recognition.onend = () => {
@@ -109,7 +126,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
 
     recognitionRef.current = recognition;
     recognition.start();
-  }, [options]);
+  }, []);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn, stringSimilarity } from "@/lib/utils";
 import { useTextToSpeech, useSpeechRecognition } from "@/lib/hooks";
 import { VolumeIcon, MicIcon } from "@/components/ui";
@@ -24,9 +24,36 @@ export function SpeakRepeat({
   const [similarity, setSimilarity] = useState(0);
   const [hasListened, setHasListened] = useState(false);
 
+  // Ref to track if auto-play has already happened (prevents infinite loop)
+  const hasAutoPlayed = useRef(false);
+
+  // Stable callback for TTS end
+  const handleTTSEnd = useCallback(() => {
+    setHasListened(true);
+  }, []);
+
   const { speak: ttsSpeak, isPlaying: ttsPlaying } = useTextToSpeech({
-    onEnd: () => setHasListened(true),
+    onEnd: handleTTSEnd,
   });
+
+  // Stable callback for speech recognition result
+  const handleSpeechResult = useCallback((result: string, confidence: number) => {
+    const sim = stringSimilarity(result, text);
+    setTranscript(result);
+    setSimilarity(sim);
+    setStage("result");
+
+    // Consider correct if similarity > 70%
+    const isCorrect = sim >= 0.7;
+    onAnswer(isCorrect, result, sim);
+  }, [text, onAnswer]);
+
+  // Stable callback for speech recognition error
+  const handleSpeechError = useCallback((error: string) => {
+    console.error("Speech recognition error:", error);
+    // Allow retry
+    setStage("record");
+  }, []);
 
   const {
     startListening,
@@ -35,28 +62,19 @@ export function SpeakRepeat({
     isSupported: speechSupported,
     transcript: liveTranscript,
   } = useSpeechRecognition({
-    onResult: (result, confidence) => {
-      const sim = stringSimilarity(result, text);
-      setTranscript(result);
-      setSimilarity(sim);
-      setStage("result");
-
-      // Consider correct if similarity > 70%
-      const isCorrect = sim >= 0.7;
-      onAnswer(isCorrect, result, sim);
-    },
-    onError: (error) => {
-      console.error("Speech recognition error:", error);
-      // Allow retry
-      setStage("record");
-    },
+    onResult: handleSpeechResult,
+    onError: handleSpeechError,
   });
 
-  // Auto-play on mount
+  // Auto-play on mount (only once)
   useEffect(() => {
+    if (hasAutoPlayed.current) return;
+
     const timer = setTimeout(() => {
       ttsSpeak(text);
+      hasAutoPlayed.current = true;
     }, 500);
+
     return () => clearTimeout(timer);
   }, [text, ttsSpeak]);
 
@@ -139,7 +157,7 @@ export function SpeakRepeat({
               <VolumeIcon className="w-12 h-12" />
             </button>
             <p className="text-muted-foreground">
-              {ttsPlaying ? "Listening..." : "Tap to listen"}
+              {ttsPlaying ? "Playing audio..." : "Tap to listen"}
             </p>
 
             {hasListened && (

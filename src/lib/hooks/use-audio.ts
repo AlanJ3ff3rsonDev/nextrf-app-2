@@ -1,16 +1,19 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { ttsService } from "@/lib/services/tts-service";
 
 interface UseAudioOptions {
   onEnd?: () => void;
   rate?: number;
+  useHighQuality?: boolean; // Use OpenAI TTS (default: true)
 }
 
 export function useTextToSpeech(options: UseAudioOptions = {}) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   // Store options in ref to avoid recreating speak on every render
   const optionsRef = useRef(options);
@@ -21,43 +24,49 @@ export function useTextToSpeech(options: UseAudioOptions = {}) {
   }, [options]);
 
   useEffect(() => {
-    setIsSupported("speechSynthesis" in window);
+    // Always supported since we have both OpenAI and browser fallback
+    setIsSupported(true);
   }, []);
 
-  // speak now has stable reference - only depends on isSupported
+  // speak now has stable reference
   const speak = useCallback(
-    (text: string) => {
-      if (!isSupported || !window.speechSynthesis) return;
+    async (text: string) => {
+      const useHighQuality = optionsRef.current.useHighQuality !== false;
 
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+      setIsLoading(true);
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = optionsRef.current.rate ?? 0.9;
-      utterance.pitch = 1;
-
-      utterance.onstart = () => setIsPlaying(true);
-      utterance.onend = () => {
+      try {
+        await ttsService.speak(text, {
+          speed: optionsRef.current.rate ?? 0.9,
+          onStart: () => {
+            setIsLoading(false);
+            setIsPlaying(true);
+            setUsingFallback(ttsService.usingFallback);
+          },
+          onEnd: () => {
+            setIsPlaying(false);
+            optionsRef.current.onEnd?.();
+          },
+          onError: () => {
+            setIsLoading(false);
+            setIsPlaying(false);
+          },
+        });
+      } catch {
+        setIsLoading(false);
         setIsPlaying(false);
-        optionsRef.current.onEnd?.();
-      };
-      utterance.onerror = () => setIsPlaying(false);
-
-      utteranceRef.current = utterance;
-      window.speechSynthesis.speak(utterance);
+      }
     },
-    [isSupported]
+    []
   );
 
   const stop = useCallback(() => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      setIsPlaying(false);
-    }
+    ttsService.stop();
+    setIsPlaying(false);
+    setIsLoading(false);
   }, []);
 
-  return { speak, stop, isPlaying, isSupported };
+  return { speak, stop, isPlaying, isLoading, isSupported, usingFallback };
 }
 
 interface UseSpeechRecognitionOptions {

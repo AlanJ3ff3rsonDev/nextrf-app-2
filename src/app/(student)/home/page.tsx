@@ -53,7 +53,7 @@ export default function StudentHomePage() {
           .from("students")
           .select("id, profile_id, class_id, username, level, total_xp, created_at")
           .eq("profile_id", user.id)
-          .single();
+          .single() as { data: any; error: any };
 
         if (studentError) {
           console.error("Erro ao buscar estudante:", studentError);
@@ -87,7 +87,7 @@ export default function StudentHomePage() {
           .from("streaks")
           .select("*")
           .eq("student_id", studentData.id)
-          .single();
+          .single() as { data: any };
 
         setStreak(streakData as Streak);
 

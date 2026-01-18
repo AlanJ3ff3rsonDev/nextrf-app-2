@@ -65,6 +65,17 @@ declare global {
   var SpeechRecognition: SpeechRecognitionConstructor;
   // eslint-disable-next-line no-var
   var webkitSpeechRecognition: SpeechRecognitionConstructor;
+
+  // Make SpeechRecognition event types available globally
+  interface SpeechRecognitionEvent extends Event {
+    results: SpeechRecognitionResultList;
+    resultIndex: number;
+  }
+
+  interface SpeechRecognitionErrorEvent extends Event {
+    error: string;
+    message: string;
+  }
 }
 
 export {};

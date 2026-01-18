@@ -26,7 +26,7 @@ export default function StudentLoginPage() {
         .from("students")
         .select("id, profile_id, class_id")
         .eq("username", username.toLowerCase())
-        .single();
+        .single() as { data: { id: string; profile_id: string; class_id: string } | null; error: any };
 
       if (studentError || !student) {
         setError("Usuário não encontrado. Verifique seu nome de usuário.");
@@ -39,7 +39,7 @@ export default function StudentLoginPage() {
         .from("classes")
         .select("code")
         .eq("id", student.class_id)
-        .single();
+        .single() as { data: { code: string } | null; error: any };
 
       if (classError || !classData) {
         setError("Turma não encontrada.");

@@ -9,52 +9,56 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // NextRF Brand Colors
+        // NextRF Brand Colors - Pastel palette (softer, modern)
         primary: {
-          50: "#EBF4FE",
-          100: "#D7E9FD",
-          200: "#AFD3FB",
-          300: "#87BDF9",
-          400: "#5FA7F7",
-          500: "#2B7DE9", // Main brand blue
-          600: "#1B63C4",
-          700: "#144A93",
-          800: "#0E3162",
-          900: "#071931",
+          50: "#EEF6FF",
+          100: "#DCEEFF",
+          200: "#B9DCFF",
+          300: "#8AC4FF",
+          400: "#5AABFF",
+          500: "#4A9BE8", // Soft pastel blue
+          600: "#3B7FBF",
+          700: "#2D6396",
+          800: "#1E476D",
+          900: "#0F2B44",
         },
         secondary: {
-          50: "#FFF5E6",
-          100: "#FFEBCC",
-          200: "#FFD699",
-          300: "#FFC266",
-          400: "#FFAD33",
-          500: "#FF8C00", // Main brand orange
-          600: "#CC7000",
-          700: "#995400",
-          800: "#663800",
-          900: "#331C00",
+          50: "#FFF8F0",
+          100: "#FFEEDD",
+          200: "#FFDBB8",
+          300: "#FFC48A",
+          400: "#FFAD5C",
+          500: "#F5A352", // Soft pastel orange
+          600: "#DB8A3D",
+          700: "#B87230",
+          800: "#8C5624",
+          900: "#5C3818",
         },
-        // Semantic colors
+        // Semantic colors - Pastel versions
         success: {
-          50: "#ECFDF5",
-          100: "#D1FAE5",
-          500: "#10B981",
-          600: "#059669",
-          700: "#047857",
+          50: "#F0FDF4",
+          100: "#DCFCE7",
+          200: "#BBF7D0",
+          500: "#4ADE80", // Soft pastel green
+          600: "#22C55E",
+          700: "#16A34A",
         },
         error: {
           50: "#FEF2F2",
           100: "#FEE2E2",
-          500: "#EF4444",
-          600: "#DC2626",
-          700: "#B91C1C",
+          200: "#FECACA",
+          300: "#FCA5A5",
+          500: "#F87171", // Soft pastel red
+          600: "#EF4444",
+          700: "#DC2626",
         },
         warning: {
           50: "#FFFBEB",
           100: "#FEF3C7",
-          500: "#F59E0B",
-          600: "#D97706",
-          700: "#B45309",
+          200: "#FDE68A",
+          500: "#FBBF24", // Soft pastel yellow
+          600: "#F59E0B",
+          700: "#D97706",
         },
         // UI colors
         background: "var(--background)",

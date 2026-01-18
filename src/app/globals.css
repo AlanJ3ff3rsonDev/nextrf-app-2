@@ -7,18 +7,18 @@
     --background: #FAFBFC;
     --foreground: #1F2937;
 
-    /* Primary - NextRF Blue */
-    --primary: #2B7DE9;
+    /* Primary - Soft Pastel Blue */
+    --primary: #4A9BE8;
     --primary-foreground: #FFFFFF;
 
-    /* Secondary - NextRF Orange */
-    --secondary: #FF8C00;
+    /* Secondary - Soft Pastel Orange */
+    --secondary: #F5A352;
     --secondary-foreground: #FFFFFF;
 
-    /* Semantic */
-    --success: #10B981;
-    --error: #EF4444;
-    --warning: #F59E0B;
+    /* Semantic - Pastel versions */
+    --success: #4ADE80;
+    --error: #F87171;
+    --warning: #FBBF24;
 
     /* UI */
     --card: #FFFFFF;
@@ -176,10 +176,10 @@
     scrollbar-width: none;
   }
 
-  /* Confetti colors */
-  .confetti-1 { background-color: #2B7DE9; }
-  .confetti-2 { background-color: #FF8C00; }
-  .confetti-3 { background-color: #10B981; }
-  .confetti-4 { background-color: #F59E0B; }
-  .confetti-5 { background-color: #EF4444; }
+  /* Confetti colors - Pastel versions */
+  .confetti-1 { background-color: #4A9BE8; }
+  .confetti-2 { background-color: #F5A352; }
+  .confetti-3 { background-color: #4ADE80; }
+  .confetti-4 { background-color: #FBBF24; }
+  .confetti-5 { background-color: #F87171; }
 }

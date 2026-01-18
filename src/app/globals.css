@@ -31,6 +31,32 @@
     --radius: 0.75rem;
   }
 
+  /* Dark mode colors */
+  .dark {
+    --background: #0F172A;
+    --foreground: #F1F5F9;
+
+    /* Primary - Slightly brighter for dark mode */
+    --primary: #5AABFF;
+    --primary-foreground: #0F172A;
+
+    /* Secondary */
+    --secondary: #FFAD5C;
+    --secondary-foreground: #0F172A;
+
+    /* Semantic */
+    --success: #4ADE80;
+    --error: #F87171;
+    --warning: #FBBF24;
+
+    /* UI */
+    --card: #1E293B;
+    --card-foreground: #F1F5F9;
+    --border: #334155;
+    --muted: #1E293B;
+    --muted-foreground: #94A3B8;
+  }
+
   * {
     @apply border-border;
   }

@@ -17,6 +17,7 @@ import {
   UserIcon,
   SettingsIcon,
   LogOutIcon,
+  ThemeToggle,
 } from "@/components/ui";
 import { cn, getCEFRDisplayName } from "@/lib/utils";
 import type { Student, Streak, Badge, StudentBadge } from "@/types";
@@ -114,12 +115,15 @@ export default function StudentProfilePage() {
       <header className="bg-primary-500 text-white p-6 pb-16 rounded-b-[2rem]">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold">Profile</h1>
-          <button
-            onClick={handleSignOut}
-            className="p-2 hover:bg-white/10 rounded-full"
-          >
-            <LogOutIcon className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle className="bg-white/10 hover:bg-white/20" />
+            <button
+              onClick={handleSignOut}
+              className="p-2 hover:bg-white/10 rounded-full"
+            >
+              <LogOutIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </header>
 

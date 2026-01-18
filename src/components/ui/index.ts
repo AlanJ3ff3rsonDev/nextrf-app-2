@@ -5,3 +5,4 @@ export * from "./badge";
 export * from "./progress";
 export * from "./avatar";
 export * from "./icons";
+export * from "./theme-toggle";

@@ -2,26 +2,184 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #FAFBFC;
+    --foreground: #1F2937;
+
+    /* Primary - NextRF Blue */
+    --primary: #2B7DE9;
+    --primary-foreground: #FFFFFF;
+
+    /* Secondary - NextRF Orange */
+    --secondary: #FF8C00;
+    --secondary-foreground: #FFFFFF;
+
+    /* Semantic */
+    --success: #10B981;
+    --error: #EF4444;
+    --warning: #F59E0B;
+
+    /* UI */
+    --card: #FFFFFF;
+    --card-foreground: #1F2937;
+    --border: #E5E7EB;
+    --muted: #F3F4F6;
+    --muted-foreground: #6B7280;
+
+    /* Radius */
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    min-height: 100dvh;
+  }
+
+  /* Mobile optimizations */
+  input, textarea, select, button {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Remove default button styles on iOS */
+  button {
+    -webkit-appearance: none;
+  }
+
+  /* Better focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Card component */
+  .card {
+    @apply bg-card rounded-2xl shadow-soft p-4;
+  }
+
+  /* Exercise card - larger touch targets for kids */
+  .exercise-option {
+    @apply min-h-[80px] min-w-[80px] flex items-center justify-center
+           rounded-2xl border-2 border-border bg-white
+           transition-all duration-200 ease-out
+           active:scale-95 select-none;
+  }
+
+  .exercise-option-selected {
+    @apply border-primary-500 bg-primary-50;
+  }
+
+  .exercise-option-correct {
+    @apply border-success-500 bg-success-50;
+  }
+
+  .exercise-option-incorrect {
+    @apply border-error-500 bg-error-50 animate-shake;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply h-3 bg-muted rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-primary-500 rounded-full transition-all duration-500 ease-out;
+  }
+
+  /* XP badge */
+  .xp-badge {
+    @apply inline-flex items-center gap-1 px-2 py-1
+           bg-secondary-100 text-secondary-700
+           rounded-full text-sm font-semibold;
+  }
+
+  /* Streak badge */
+  .streak-badge {
+    @apply inline-flex items-center gap-1 px-2 py-1
+           bg-warning-100 text-warning-700
+           rounded-full text-sm font-semibold;
+  }
+
+  /* Level badge */
+  .level-badge {
+    @apply inline-flex items-center justify-center
+           w-8 h-8 rounded-full
+           bg-primary-500 text-white
+           text-xs font-bold;
+  }
+
+  /* Bottom navigation */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0
+           bg-white border-t border-border
+           pb-safe-bottom px-safe-left px-safe-right;
+  }
+
+  /* Safe area container */
+  .safe-container {
+    @apply pt-safe-top pb-safe-bottom pl-safe-left pr-safe-right;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Touch-friendly tap area */
+  .tap-highlight {
+    @apply relative;
+  }
+
+  .tap-highlight::after {
+    content: "";
+    @apply absolute inset-0 -m-2 rounded-lg;
+  }
+
+  /* Gradient backgrounds */
+  .gradient-primary {
+    @apply bg-gradient-to-br from-primary-400 to-primary-600;
+  }
+
+  .gradient-secondary {
+    @apply bg-gradient-to-br from-secondary-400 to-secondary-600;
+  }
+
+  .gradient-success {
+    @apply bg-gradient-to-br from-success-500 to-success-700;
+  }
+
+  /* Text gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
+  }
+
+  /* Hide scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Confetti colors */
+  .confetti-1 { background-color: #2B7DE9; }
+  .confetti-2 { background-color: #FF8C00; }
+  .confetti-3 { background-color: #10B981; }
+  .confetti-4 { background-color: #F59E0B; }
+  .confetti-5 { background-color: #EF4444; }
 }

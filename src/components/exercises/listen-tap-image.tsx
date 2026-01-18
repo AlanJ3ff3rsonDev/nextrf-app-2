@@ -54,7 +54,7 @@ export function ListenTapImage({
   return (
     <div className="flex-1 flex flex-col">
       {/* Instructions */}
-      <h2 className="text-xl font-bold text-center mb-6">
+      <h2 className="text-lg sm:text-xl font-bold text-center mb-4">
         Tap what you hear
       </h2>
 
@@ -63,7 +63,7 @@ export function ListenTapImage({
         onClick={handlePlayAudio}
         disabled={isPlaying}
         className={cn(
-          "mx-auto mb-8 w-20 h-20 rounded-full",
+          "mx-auto mb-6 w-16 h-16 sm:w-20 sm:h-20 rounded-full",
           "bg-primary-500 text-white",
           "flex items-center justify-center",
           "shadow-medium hover:shadow-strong",
@@ -72,11 +72,11 @@ export function ListenTapImage({
           isPlaying && "animate-pulse-slow"
         )}
       >
-        <VolumeIcon className="w-10 h-10" />
+        <VolumeIcon className="w-8 h-8 sm:w-10 sm:h-10" />
       </button>
 
-      {/* Options Grid */}
-      <div className="grid grid-cols-2 gap-4 flex-1">
+      {/* Options Grid - Mobile-first with constrained card sizes */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md mx-auto">
         {options.map((item) => {
           const isSelected = selectedId === item.id;
           const isCorrect = item.id === correctItem.id;
@@ -88,18 +88,19 @@ export function ListenTapImage({
               onClick={() => handleSelect(item.id)}
               disabled={disabled || selectedId !== null}
               className={cn(
-                "relative aspect-square rounded-2xl",
-                "border-4 bg-white",
+                "relative rounded-2xl",
+                "border-3 sm:border-4 bg-white",
                 "transition-all duration-200",
                 "active:scale-95",
-                "overflow-hidden",
+                "overflow-hidden shadow-soft",
+                // Fixed height instead of aspect-square to prevent giant cards
+                "h-32 sm:h-40",
                 // Default state
-                !showResult && !isSelected && "border-border hover:border-primary-300",
-                // Selected but not checked yet
-                isSelected && !showResult && "border-primary-500",
+                !showResult && "border-border hover:border-primary-300 hover:shadow-medium",
                 // Show results
                 showResult && isCorrect && "border-success-500 bg-success-50",
-                showResult && isSelected && !isCorrect && "border-error-500 bg-error-50 animate-shake"
+                showResult && isSelected && !isCorrect && "border-error-500 bg-error-50 animate-shake",
+                showResult && !isSelected && !isCorrect && "opacity-50"
               )}
             >
               {item.image_url ? (
@@ -110,14 +111,17 @@ export function ListenTapImage({
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl">
-                  {getEmojiForWord(item.text_en)}
+                // Larger emoji for better visibility
+                <div className="w-full h-full flex items-center justify-center pt-2">
+                  <span className="text-5xl sm:text-6xl">
+                    {getEmojiForWord(item.text_en)}
+                  </span>
                 </div>
               )}
 
-              {/* Word label */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white font-semibold text-center">
+              {/* Word label - improved readability */}
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-2 sm:p-3">
+                <p className="text-white font-bold text-sm sm:text-base text-center drop-shadow-md">
                   {item.text_en}
                 </p>
               </div>
